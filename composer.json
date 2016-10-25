@@ -1,0 +1,13 @@
+{
+    "name": "laroute/laroute",
+    "description": "A high readablility route syntax for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fenz",
+            "email": "uukoo@163.com"
+        }
+    ],
+    "require": {}
+}
