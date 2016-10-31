@@ -1,6 +1,6 @@
 <?php
 
-namespace Laroute;
+namespace Laroute\Document;
 
 use Laroute\Helper\TGetter;
 
@@ -14,6 +14,7 @@ use Laroute\Helper\TGetter;
  */
 class Line
 {
+
 	use TGetter;
 
 	/**
@@ -121,14 +122,14 @@ class Line
 	 * @access public
 	 *
 	 * @param  string       $pattern
-	 * @param  int | string $match   Group index or name
+	 * @param  int | string $matchGroup   Group index or name
 	 *
 	 * @return string
 	 */
-	public function pregGet( string$pattern, /*int|string*/$match=0 ):string
+	public function pregGet( string$pattern, /*int|string*/$matchGroup=0 ):string
 	{
 		preg_match($pattern,ltrim($this->content,"\t"),$matches);
-		return $matches[$match]??'';
+		return $matches[$matchGroup]??'';
 	}
 
 	/**
@@ -230,4 +231,5 @@ class Line
 	{
 		return new static(ltrim($this->getContent(),' '));
 	}
+
 }
