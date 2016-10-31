@@ -17,10 +17,10 @@ Step 2. Find your App\Providers\RouteServiceProvider in your Laravel project, an
 
 ``` php
 // require balabala.php;
-\Laroute\route(balabala.laroute);
+\Laroute\route(balabala);
 ```
 
-Step 3. Write routes with Laroute.
+Step 3. Write routes with Laroute, and save file named with extension '.laroute'.
 
 # Editor support
 
