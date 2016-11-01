@@ -1,11 +1,15 @@
 <?php
 
-namespace Laroute\Document;
+namespace Laroute\Route;
+
+use Laroute\RouteContainer;
+use Laroute\Document\Line;
 
 ////////////////////////////////////////////////////////////////
 
-class Group
+class Group implements Contracts\IItem, Contracts\IContainer
 {
+	use TContainer;
 
 	/**
 	 * Var line
@@ -23,7 +27,7 @@ class Group
 	 *
 	 * @var    array
 	 */
-	private $middlewares;
+	private $middlewares= [];
 
 
 	/**
@@ -71,8 +75,6 @@ class Group
 	 * @access public
 	 *
 	 * @param  Line $line
-	 *
-	 * @return
 	 */
 	public function __construct( Line$line )
 	{
@@ -96,9 +98,11 @@ class Group
 	 */
 	private function parseMiddleware():self
 	{
-		return $this->matchAndDo(function( string$match ){
-			$this->middlewares= explode('>',$match);
-		},'/ >([^\\s]+)/',1);
+		$this->line->pregMap('/ >([^\\s]+)/',function( string$matches ){
+			$this->middlewares[]= $matches[1];
+		});
+
+		return $this;
 	}
 
 	/**
@@ -110,9 +114,11 @@ class Group
 	 */
 	private function parseDomain():self
 	{
-		return $this->matchAndDo(function( string$match ){
-			$this->domain= $match;
-		},'/ @([^\\s]+)/',1);
+		$this->line->pregMap('/ @([^\\s]+)/',function( string$matches ){
+			$this->domain= $matches[1];
+		});
+
+		return $this;
 	}
 
 	/**
@@ -124,9 +130,11 @@ class Group
 	 */
 	public function parsePrefix():self
 	{
-		return $this->matchAndDo(function( string$match ){
-			$this->prefix= $match;
-		},'/ \\/([^\\s]+)/',1);
+		$this->line->pregMap('/ \\/([^\\s]+)/',function( string$matches ){
+			$this->prefix= $matches[1];
+		});
+
+		return $this;
 	}
 
 	/**
@@ -138,9 +146,11 @@ class Group
 	 */
 	public function parseNamespace():self
 	{
-		return $this->matchAndDo(function( string$match ){
-			$this->namespace= $match;
-		},'/ &([^\\s]+)/',1);
+		$this->line->pregMap('/ &([^\\s]+)/',function( string$matches ){
+			$this->namespace= $matches[1];
+		});
+
+		return $this;
 	}
 
 	/**
@@ -152,27 +162,9 @@ class Group
 	 */
 	public function parseNamePrefix():self
 	{
-		return $this->matchAndDo(function( string$match ){
-			$this->namePrefix= $match;
-		},'/ \\+([^\\s]+)/',1);
-	}
-
-	/**
-	 * Method matchAndDo
-	 *
-	 * @access private
-	 *
-	 * @param  callable     $callback
-	 * @param  string       $pattern
-	 * @param  int | string $match   Group index or name
-	 *
-	 * @return self
-	 */
-	private function matchAndDo( callable$callback, string$pattern, /*int|string*/$matchGroup=0 ):self
-	{
-		if( $match= $this->line->pregGet($pattern,$matchGroup) ){
-			$callback($match);
-		}
+		$this->line->pregMap('/ \\+([^\\s]+)/',function( string$matches ){
+			$this->namePrefix= $matches[1];
+		});
 
 		return $this;
 	}

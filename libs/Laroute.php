@@ -5,12 +5,17 @@ namespace Laroute;
 use Laroute\Helper\Stack;
 use Laroute\Document\Document;
 use Laroute\Document\Line;
-use Laroute\Document\Group;
+use Laroute\Route\Route;
+use Laroute\Route\ResourceRoute;
+use Laroute\Route\Group;
+use Laroute\Route\Contracts\IContainer as IRouteContainer;
+use Laroute\Route\TContainer as TRouteContainer;
 
 ////////////////////////////////////////////////////////////////
 
-class Laroute
+class Laroute implements IRouteContainer
 {
+	use TRouteContainer;
 
 	/**
 	 * Var currentLine
@@ -35,7 +40,7 @@ class Laroute
 	 *
 	 * @access private
 	 *
-	 * @var
+	 * @var    \Laroute\Route\Contracts\IRoute
 	 */
 	private $currentRoute;
 
@@ -77,6 +82,8 @@ class Laroute
 	 * Execute the route.
 	 *
 	 * @access public
+	 *
+	 * @return void
 	 */
 	public function execute()
 	{
@@ -87,6 +94,8 @@ class Laroute
 	 * Parsing route file.
 	 *
 	 * @access private
+	 *
+	 * @return void
 	 */
 	private function parse()
 	{
@@ -108,6 +117,7 @@ class Laroute
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
+	 * @return void
 	 */
 	private function closureFeeding( Line$line )
 	{
@@ -136,7 +146,7 @@ class Laroute
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
-	 * @return
+	 * @return void
 	 */
 	private function routeFeeding( Line$line )
 	{
@@ -144,10 +154,14 @@ class Laroute
 			$line,
 			function( Line$line ){
 				$this->currentRoute->feed($line);
+
+				if( $this->currentRoute->openedClosure ){
+					$this->currentClosure= $this->currentRoute->openedClosure;
+				}
 			},
 			function( Line$line ){
 				$this->closeRoute($line);
-				$this->setIndent($line->getIndentLevel());
+				$this->setLevel($line->getIndentLevel());
 			},
 		]);
 	}
@@ -164,7 +178,7 @@ class Laroute
 	 *
 	 * @return void
 	 */
-	private function checkIndentAndProcess( Line$line, callable$more, callable$equal, callable$less=null ):void
+	private function checkIndentAndProcess( Line$line, callable$more, callable$equal, callable$less=null )
 	{
 		$diff= $line->indentLevel - $this->indentLevel;
 
@@ -183,6 +197,8 @@ class Laroute
 	 * Method closeClosure
 	 *
 	 * @access private
+	 *
+	 * @return void
 	 */
 	private function closeClosure()
 	{
@@ -195,6 +211,8 @@ class Laroute
 	 * @access private
 	 *
 	 * @param  \Laroute\Document\Line $line
+	 *
+	 * @return void
 	 */
 	private function parseLine( Line$line )
 	{
@@ -222,6 +240,8 @@ class Laroute
 	 * @access private
 	 *
 	 * @param int $level
+	 *
+	 * @return void
 	 */
 	private function setLevel( int$level )
 	{
@@ -242,10 +262,16 @@ class Laroute
 	 * @access private
 	 *
 	 * @param  \Laroute\Document\Line $line
+	 *
+	 * @return void
 	 */
 	private function createGroup( Line$line )
 	{
-		$this->groups->push(new Group($line));
+		$this->getTopContainer()->addItem(
+			$group= new Group($line)
+		);
+
+		$this->groups->push($group);
 	}
 
 	/**
@@ -254,10 +280,26 @@ class Laroute
 	 * @access private
 	 *
 	 * @param  \Laroute\Document\Line $line
+	 *
+	 * @return void
 	 */
 	private function createRoute( Line$line )
 	{
-		#
+		$this->getTopContainer()->addItem(
+			$this->currentRoute= ( $line->pregMatch('/^resource /')? new ResourceRoute($line) : new Route($line) )
+		);
+	}
+
+	/**
+	 * Method getTopContainer
+	 *
+	 * @access private
+	 *
+	 * @return Laroute\Route\Contracts\IContainer
+	 */
+	private function getTopContainer():IRouteContainer
+	{
+		return $this->groups->top??$this;
 	}
 
 	/**
@@ -266,6 +308,8 @@ class Laroute
 	 * @access private
 	 *
 	 * @param  string $fileName
+	 *
+	 * @return void
 	 */
 	private function include( string$fileName )
 	{
@@ -278,16 +322,30 @@ class Laroute
 	 * @access protected
 	 *
 	 * @param  int $level
+	 *
+	 * @return void
 	 */
 	protected function closeGroups( int$level=0 )
 	{
-		if( $this->groups->isEmpty() ) return;
+		if( $this->groups->isEmpty ) return;
 
 		while( $level-->=0 ){
 			$node= $this->groups->pop();
 
 			$this->indentLevel-= $level>=0 ?1:0;
 		}
+	}
+
+	/**
+	 * Method claseRoute
+	 *
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function closeRoute()
+	{
+		$this->currentRoute= null;
 	}
 
 }

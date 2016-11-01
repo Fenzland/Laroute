@@ -2,10 +2,13 @@
 
 namespace Laroute\Helper;
 
+use Laroute\Helper\TGetter;
+
 ////////////////////////////////////////////////////////////////
 
 class Stack
 {
+	use TGetter;
 
 	/**
 	 * The array that hosting the items.
@@ -44,7 +47,7 @@ class Stack
 	 *
 	 * @param  mixed $item
 	 *
-	 * @return
+	 * @return void
 	 */
 	public function push( $item )
 	{
@@ -62,7 +65,7 @@ class Stack
 	 *
 	 * @access public
 	 *
-	 * @return
+	 * @return ($this->type)
 	 */
 	public function pop()
 	{
@@ -74,9 +77,9 @@ class Stack
 	 *
 	 * @access public
 	 *
-	 * @return
+	 * @return ($this->type)
 	 */
-	public function top()
+	public function getTop()
 	{
 		return $this->stackArray[0]??null;
 	}
@@ -88,7 +91,7 @@ class Stack
 	 *
 	 * @param  int $index
 	 *
-	 * @return
+	 * @return ($this->type)
 	 */
 	public function get( int$index )
 	{
@@ -102,7 +105,7 @@ class Stack
 	 *
 	 * @return bool
 	 */
-	public function isEmpty():bool
+	public function getIsEmpty():bool
 	{
 		return empty($this->stackArray);
 	}
@@ -117,6 +120,18 @@ class Stack
 	public function count():int
 	{
 		return count($this->stackArray);
+	}
+
+	/**
+	 * Method getSize
+	 *
+	 * @access public
+	 *
+	 * @return int
+	 */
+	public function getSize():int
+	{
+		return $this->count();
 	}
 
 }
