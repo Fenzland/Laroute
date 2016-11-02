@@ -59,6 +59,33 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	private $name;
 
 	/**
+	 * Var middlewares
+	 *
+	 * @access private
+	 *
+	 * @var    array
+	 */
+	private $middlewares= [];
+
+	/**
+	 * Var action
+	 *
+	 * @access private
+	 *
+	 * @var    \Laroute\Route\Action\AClosureAction
+	 */
+	private $action;
+
+	/**
+	 * Var openedClosure
+	 *
+	 * @access private
+	 *
+	 * @var    \Laroute\Route\ClosureAction
+	 */
+	private $openedClosure;
+
+	/**
 	 * Method __construct
 	 *
 	 * @access public
@@ -72,6 +99,22 @@ class Route implements Contracts\IItem, Contracts\IRoute
 		->parsePath($line)
 		->parseName($line)
 		;
+	}
+
+	/**
+	 * Method list
+	 *
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function list():array
+	{
+		return [
+			'name'=> $this->name,
+			'methods'=> $this->methods,
+			'path'=> $this->path,
+		];
 	}
 
 	/**
@@ -144,7 +187,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 */
 	private function parseName( Line$line ):self
 	{
-		$line->pregMap('/ ([^\/\\s]+)$/',function( string$matches ){
+		$line->pregMap('/ ([^\/\\s]+)$/',function( string...$matches ){
 			$this->name= $matches[1];
 		});
 
@@ -233,7 +276,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 */
 	private function feedMiddleware( Line$line )
 	{
-		$line->pregMap('/(?:^| )>([^\\s]+)/',function( string$matches ){
+		$line->pregMap('/(?:^| )>([^\\s]+)/',function( string...$matches ){
 			$this->middlewares[]= $matches[1];
 		});
 	}
@@ -265,8 +308,8 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 */
 	private function feedClosureAction( Line$line )
 	{
-		if( $line->pregMatch(ClosureAction::PATTERN) ){
-			$this->startClosureAction($line);
+		if( $line->pregMatch(MultilineClosureAction::PATTERN) ){
+			$this->startMultilineClosureAction($line);
 		}elseif( $line->pregMatch(SimpleClosureAction::PATTERN) ){
 			$this->feedSimpleClosureAction($line);
 		}else{
@@ -291,7 +334,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method startClosureAction
+	 * Method startMultilineClosureAction
 	 *
 	 * @access private
 	 *
@@ -299,9 +342,11 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 *
 	 * @return void
 	 */
-	private function startClosureAction( Line$line )
+	private function startMultilineClosureAction( Line$line )
 	{
 		$this->sureNoAction();
+
+		$this->openedClosure= new MultilineClosureAction($line);
 	}
 
 	/**
@@ -319,15 +364,15 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method getOpendClosure
+	 * Method getOpenedClosure
 	 *
 	 * @access public
 	 *
 	 * @return \Laroute\Route\Closure
 	 */
-	public function getOpendClosure()
+	public function getOpenedClosure()
 	{
-		#
+		return $this->openedClosure;
 	}
 
 }

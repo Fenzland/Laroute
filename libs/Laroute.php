@@ -91,6 +91,20 @@ class Laroute implements IRouteContainer
 	}
 
 	/**
+	 * Method list
+	 *
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function list():array
+	{
+		return $this->map( function( $item ){
+			return $item->list();
+		} );
+	}
+
+	/**
 	 * Parsing route file.
 	 *
 	 * @access public
@@ -162,6 +176,8 @@ class Laroute implements IRouteContainer
 			function( Line$line ){
 				$this->closeRoute($line);
 				$this->setLevel($line->getIndentLevel());
+
+				$this->parseLine($line);
 			},
 		]);
 	}
@@ -202,6 +218,8 @@ class Laroute implements IRouteContainer
 	 */
 	private function closeClosure()
 	{
+		$this->currentRoute->closeClosure();
+
 		$this->closure= null;
 	}
 

@@ -30,4 +30,34 @@ trait TContainer
 		$this->items[]= $item;
 	}
 
+	/**
+	 * Method map
+	 *
+	 * @access public
+	 *
+	 * @param  callable $callback
+	 *
+	 * @return mixed
+	 */
+	public function map( callable$callback )
+	{
+		return array_map($callback,$this->items);
+	}
+
+	/**
+	 * Method mapRecursive
+	 *
+	 * @access public
+	 *
+	 * @param  callable $callback
+	 *
+	 * @return mixed
+	 */
+	public function mapRecursive( callable$callback )
+	{
+		return array_map(function($item){
+			return $callback($item,( ( $item instanceof self )? $item->mapRecursive($callback) : null ));
+		},$this->items);
+	}
+
 }

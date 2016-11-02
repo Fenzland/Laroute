@@ -91,6 +91,24 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	}
 
 	/**
+	 * Method list
+	 *
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function list():array
+	{
+		return [
+			'middlewares'=> $this->middlewares,
+			'prefix'=> $this->prefix,
+			'domain'=> $this->domain,
+			'namespace'=> $this->namespace,
+			'children'=> $this->map( function( $item ){ return $item->list(); } ),
+		];
+	}
+
+	/**
 	 * Method parseMiddleware
 	 *
 	 * @access private
@@ -99,7 +117,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	private function parseMiddleware():self
 	{
-		$this->line->pregMap('/ >([^\\s]+)/',function( string$matches ){
+		$this->line->pregMap('/ >([^\\s]+)/',function( string...$matches ){
 			$this->middlewares[]= $matches[1];
 		});
 
@@ -115,7 +133,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	private function parseDomain():self
 	{
-		$this->line->pregMap('/ @([^\\s]+)/',function( string$matches ){
+		$this->line->pregMap('/ @([^\\s]+)/',function( string...$matches ){
 			$this->domain= $matches[1];
 		});
 
@@ -131,7 +149,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	public function parsePrefix():self
 	{
-		$this->line->pregMap('/ \\/([^\\s]+)/',function( string$matches ){
+		$this->line->pregMap('/ \\/([^\\s]+)/',function( string...$matches ){
 			$this->prefix= $matches[1];
 		});
 
@@ -147,7 +165,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	public function parseNamespace():self
 	{
-		$this->line->pregMap('/ &([^\\s]+)/',function( string$matches ){
+		$this->line->pregMap('/ &([^\\s]+)/',function( string...$matches ){
 			$this->namespace= $matches[1];
 		});
 
@@ -163,7 +181,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	public function parseNamePrefix():self
 	{
-		$this->line->pregMap('/ \\+([^\\s]+)/',function( string$matches ){
+		$this->line->pregMap('/ \\+([^\\s]+)/',function( string...$matches ){
 			$this->namePrefix= $matches[1];
 		});
 
