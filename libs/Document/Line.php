@@ -145,7 +145,7 @@ class Line
 	public function pregMap( string$pattern, callable$callback ):array
 	{
 		preg_match_all($pattern,ltrim($this->content,"\t"),$matches);
-		return array_map($callback,...$matches);
+		return array_map($callback, ...$matches );
 	}
 
 	/**

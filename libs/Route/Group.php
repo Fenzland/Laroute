@@ -4,6 +4,7 @@ namespace Laroute\Route;
 
 use Laroute\RouteContainer;
 use Laroute\Document\Line;
+use Laroute\Exceptions\LarouteSyntaxException as Exception;
 
 ////////////////////////////////////////////////////////////////
 

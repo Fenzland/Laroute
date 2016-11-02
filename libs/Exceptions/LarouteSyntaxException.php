@@ -1,0 +1,10 @@
+<?php
+
+namespace Laroute\Exceptions;
+
+////////////////////////////////////////////////////////////////
+
+class LarouteSyntaxException extends \Exception
+{
+	#
+}

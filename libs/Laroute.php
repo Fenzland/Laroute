@@ -10,6 +10,8 @@ use Laroute\Route\ResourceRoute;
 use Laroute\Route\Group;
 use Laroute\Route\Contracts\IContainer as IRouteContainer;
 use Laroute\Route\TContainer as TRouteContainer;
+use Laroute\Exceptions\LarouteSyntaxError as Error;
+use Laroute\Exceptions\LarouteSyntaxException as Exception;
 
 ////////////////////////////////////////////////////////////////
 
@@ -31,7 +33,7 @@ class Laroute implements IRouteContainer
 	 *
 	 * @access private
 	 *
-	 * @var    \Laroute\Document\Closure
+	 * @var    \Laroute\Route\ClosureAction
 	 */
 	private $currentClosure;
 
@@ -74,8 +76,6 @@ class Laroute implements IRouteContainer
 		$this->groups= new Stack(Group::class);
 
 		$this->document= new Document($filename);
-
-		$this->parse();
 	}
 
 	/**
@@ -93,11 +93,11 @@ class Laroute implements IRouteContainer
 	/**
 	 * Parsing route file.
 	 *
-	 * @access private
+	 * @access public
 	 *
 	 * @return void
 	 */
-	private function parse()
+	public function parse()
 	{
 		while( ($line= $this->document->getLine())->hasMore() ){
 			if( $this->currentClosure ){
@@ -346,6 +346,20 @@ class Laroute implements IRouteContainer
 	public function closeRoute()
 	{
 		$this->currentRoute= null;
+	}
+
+	/**
+	 * Method makeException
+	 *
+	 * @access public
+	 *
+	 * @param  Laroute\Exceptions\LarouteSyntaxError $e
+	 *
+	 * @return Laroute\Exceptions\LarouteSyntaxError
+	 */
+	public function makeException( Exception$e ):Error
+	{
+		return new Error($e,$this->document->getFilePath(),$this->document->getLineNumber());
 	}
 
 }
