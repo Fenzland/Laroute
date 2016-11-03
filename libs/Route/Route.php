@@ -5,6 +5,9 @@ namespace Laroute\Route;
 use Laroute\Document\Line;
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
 use Laroute\Helper\TGetter;
+use Laroute\Route\Action\NormalAction;
+use Laroute\Route\Action\MultilineClosureAction;
+use Laroute\Route\Action\SimpleClosureAction;
 use Illuminate\Routing\Router;
 
 ////////////////////////////////////////////////////////////////
@@ -72,7 +75,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 *
 	 * @access private
 	 *
-	 * @var    \Laroute\Route\Action\AClosureAction
+	 * @var    \Laroute\Route\Action\Contract\IAction
 	 */
 	private $action;
 
@@ -81,7 +84,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 *
 	 * @access private
 	 *
-	 * @var    \Laroute\Route\ClosureAction
+	 * @var    \Laroute\Route\Action\ClosureAction
 	 */
 	private $openedClosure;
 
@@ -111,10 +114,28 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	public function list():array
 	{
 		return [
-			'name'=> $this->name,
+			'name'=>    $this->name,
 			'methods'=> $this->methods,
-			'path'=> $this->path,
+			'path'=>    $this->path,
 		];
+	}
+
+	/**
+	 * Method makeCallback
+	 *
+	 * @access public
+	 *
+	 * @return callable
+	 */
+	public function makeCallback():callable
+	{
+		return function(){
+			$route= app('router')->match($this->methods,$this->path,$this->action->output());
+
+			$this->name        and $route->name($this->name);
+			$this->middlewares and $route->middleware($this->middlewares);
+			$this->conditions  and array_walk($this->conditions,function( string$condition, string$param )use( $route ){ $route->where($param,$condition); });
+		};
 	}
 
 	/**
@@ -157,7 +178,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 */
 	private function parsePath( Line$line ):self
 	{
-		$this->path= $line->pregGet('/ (\\/([^\\s]?))/',1);
+		$this->path= $line->pregGet('/ (\\/([^\\s]*))/',1);
 
 		if( !$this->path ){
 			throw new Exception('Missing path.');
@@ -166,7 +187,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 
 		preg_match_all('/\\{(\\w+)\\??\\}/',$this->path,$matches);
 
-		$params= array_map( function($matches){
+		$params= array_map( function( string...$matches ){
 			if( isset($this->params[$matches[1]]) ){
 				throw new Exception("Param {$matches[1]} cannot defined twice.");
 			}
@@ -250,7 +271,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 */
 	private function feedCondition( Line$line )
 	{
-		$praam= $line->pregGet('/^\?(\w+)/',1);
+		$param= $line->pregGet('/^\?(\w+)/',1);
 
 		if( !in_array($param,$this->params) ){
 			throw new Exception('Param not exists.');
@@ -262,7 +283,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 			throw new Exception('Missing condition.');
 		}
 
-		$this->conditions[$param]= $conditions;
+		$this->conditions[$param]= $condition;
 	}
 
 	/**
@@ -294,7 +315,7 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	{
 		$this->sureNoAction();
 
-		$this->action= ltrim($line->content,'>');
+		$this->action= new NormalAction(ltrim($line->content,'>'));
 	}
 
 	/**

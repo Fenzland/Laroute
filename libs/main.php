@@ -15,7 +15,5 @@ function route( string$filename )
 		throw $routes->makeException($e);
 	}
 
-	z($routes->list());
-
 	$routes->execute();
 }

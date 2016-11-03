@@ -16,4 +16,21 @@ interface IContainer
 	 */
 	function addItem( IItem$item );
 
+	/**
+	 * Method map
+	 *
+	 * @param  callable $callback
+	 *
+	 * @return mixed
+	 */
+	function mapItems( callable$callback );
+
+	/**
+	 * Method mapRecursive
+	 *
+	 * @param  callable $callback
+	 *
+	 * @return mixed
+	 */
+	function mapRecursive( callable$callback );
 }

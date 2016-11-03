@@ -87,7 +87,16 @@ class Laroute implements IRouteContainer
 	 */
 	public function execute()
 	{
-		#
+		array_map(...[
+			function( callable$callback ){
+				$callback();
+			},
+			$this->mapItems(
+				function( $item ){
+					return $item->makeCallback();
+				}
+			),
+		]);
 	}
 
 	/**
@@ -99,7 +108,7 @@ class Laroute implements IRouteContainer
 	 */
 	public function list():array
 	{
-		return $this->map( function( $item ){
+		return $this->mapItems( function( $item ){
 			return $item->list();
 		} );
 	}

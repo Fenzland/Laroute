@@ -101,11 +101,60 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	{
 		return [
 			'middlewares'=> $this->middlewares,
-			'prefix'=> $this->prefix,
-			'domain'=> $this->domain,
-			'namespace'=> $this->namespace,
-			'children'=> $this->map( function( $item ){ return $item->list(); } ),
+			'prefix'=>      $this->prefix,
+			'domain'=>      $this->domain,
+			'namespace'=>   $this->namespace,
+			'name_prefix'=> $this->namePrefix,
+			'children'=>    $this->mapItems( function( $item ){ return $item->list(); } ),
 		];
+	}
+
+	/**
+	 * Method makeCallback
+	 *
+	 * @access public
+	 *
+	 * @return callable
+	 */
+	public function makeCallback():callable
+	{
+		return function(){
+			app('router')->group(...[
+				$this->getOptions(),
+				function(){
+					array_map(...[
+						function( $coallback ){
+							$coallback();
+						},
+						$this->mapItems(
+							function( $item ){
+								return $item->makeCallback();
+							}
+						),
+					]);
+				},
+			]);
+		};
+	}
+
+	/**
+	 * Method getOptions
+	 *
+	 * @access private
+	 *
+	 * @return array
+	 */
+	private function getOptions():array
+	{
+		$options= [];
+
+		$this->middlewares and $options['middleware']= $this->middlewares ;
+		$this->prefix      and $options['prefix']=     $this->prefix      ;
+		$this->domain      and $options['domain']=     $this->domain      ;
+		$this->namespace   and $options['namespace']=  $this->namespace   ;
+		$this->namePrefix  and $options['as']=         $this->namePrefix  ;
+
+		return $options;
 	}
 
 	/**

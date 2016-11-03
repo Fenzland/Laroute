@@ -39,7 +39,7 @@ trait TContainer
 	 *
 	 * @return mixed
 	 */
-	public function map( callable$callback )
+	public function mapItems( callable$callback )
 	{
 		return array_map($callback,$this->items);
 	}

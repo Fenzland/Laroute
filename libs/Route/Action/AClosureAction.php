@@ -1,12 +1,12 @@
 <?php
 
-namespace Laroute\Route;
+namespace Laroute\Route\Action;
 
 use Laroute\Document\Line;
 
 ////////////////////////////////////////////////////////////////
 
-abstract class AClosureAction
+abstract class AClosureAction implements Contracts\IAction
 {
 
 	/**
@@ -35,6 +35,30 @@ abstract class AClosureAction
 	 * @param  \Laroute\Document\Line $line
 	 */
 	abstract public function __construct( Line$line );
+
+	/**
+	 * Method output
+	 *
+	 * @access public
+	 *
+	 * @return \Closure
+	 */
+	public function output():\Closure
+	{
+		$functionString= "return function($this->paramString){ $this->body };";
+
+		if( is_callable('eval') ){
+			return eval($functionString);
+		}else{
+			$path= storage_path('laroute/closure');
+
+			file_exists(dirname($path)) or mkdir(dirname($path),0600,true);
+
+			file_put_contents($path,"<?php\n\n$functionString");
+
+			return include $path;
+		}
+	}
 
 	/**
 	 * Method setParamString

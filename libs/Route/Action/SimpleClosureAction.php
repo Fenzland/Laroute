@@ -1,12 +1,12 @@
 <?php
 
-namespace Laroute\Route;
+namespace Laroute\Route\Action;
 
 use Laroute\Document\Line;
 
 ////////////////////////////////////////////////////////////////
 
-class MultilineClosureAction extends AClosureAction
+class SimpleClosureAction extends AClosureAction
 {
 
 	/**
@@ -16,7 +16,7 @@ class MultilineClosureAction extends AClosureAction
 	 *
 	 * @const    string
 	 */
-	const PATTERN= '/^\\((.*?)\\)=>\\{$/';
+	const PATTERN= '/^\\((.*?)\\)=> (.*?)$/';
 
 	/**
 	 * Method __construct
@@ -28,6 +28,8 @@ class MultilineClosureAction extends AClosureAction
 	public function __construct( Line$line )
 	{
 		$this->setParamString($line->pregGet(self::PATTERN,1));
+
+		$this->appendBody('return ',$line->pregGet(self::PATTERN,2),';');
 	}
 
 }
