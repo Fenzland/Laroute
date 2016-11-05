@@ -47,6 +47,15 @@ class Laroute implements IRouteContainer
 	private $currentRoute;
 
 	/**
+	 * Var currentComment
+	 *
+	 * @access private
+	 *
+	 * @var    int | null
+	 */
+	private $currentComment;
+
+	/**
 	 * Var groups
 	 *
 	 * @access private
@@ -127,6 +136,8 @@ class Laroute implements IRouteContainer
 				$this->closureFeeding($line);
 			}elseif( $this->currentRoute ){
 				$this->routeFeeding($line);
+			}elseif( $this->currentComment ){
+				$this->commentFeeding($line);
 			}else{
 				$this->parseLine($line);
 			}
@@ -184,6 +195,29 @@ class Laroute implements IRouteContainer
 			},
 			function( Line$line ){
 				$this->closeRoute($line);
+
+				$this->setLevel($line->getIndentLevel());
+
+				$this->parseLine($line);
+			},
+		]);
+	}
+
+	/**
+	 * Method commentFeeding
+	 *
+	 * @access private
+	 *
+	 * @param  \Laroute\Document\Line $line
+	 *
+	 * @return void
+	 */
+	private function commentFeeding( Line$line )
+	{
+		$this->checkIndentAndProcess(...[
+			$line,
+			function( Line$line ){},
+			function( Line$line ){
 				$this->setLevel($line->getIndentLevel());
 
 				$this->parseLine($line);
@@ -251,6 +285,10 @@ class Laroute implements IRouteContainer
 				$this->createRoute($line);
 			}break;
 
+			case '#':{
+				$this->createComment($line);
+			}break;
+
 			case ':':{
 				$this->createGroup($line);
 			}break;
@@ -315,6 +353,20 @@ class Laroute implements IRouteContainer
 		$this->getTopContainer()->addItem(
 			$this->currentRoute= ( $line->pregMatch('/^resource /')? new ResourceRoute($line) : new Route($line) )
 		);
+	}
+
+	/**
+	 * Method createComment
+	 *
+	 * @access private
+	 *
+	 * @param  \Laroute\Document\Line $line
+	 *
+	 * @return void
+	 */
+	private function createComment(  Line$line )
+	{
+		$this->currentComment= $this->indentLevel;
 	}
 
 	/**
