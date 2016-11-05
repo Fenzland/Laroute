@@ -356,7 +356,7 @@ class Laroute implements IRouteContainer
 	{
 		if( $this->groups->isEmpty ) return;
 
-		while( $level-->=0 ){
+		while( --$level>=0 ){
 			$node= $this->groups->pop();
 
 			$this->indentLevel-= $level>=0 ?1:0;
@@ -372,6 +372,8 @@ class Laroute implements IRouteContainer
 	 */
 	public function closeRoute()
 	{
+		$this->currentRoute->close();
+
 		$this->currentRoute= null;
 	}
 

@@ -52,7 +52,7 @@ abstract class AClosureAction implements Contracts\IAction
 		}else{
 			$path= storage_path('laroute/closure');
 
-			file_exists(dirname($path)) or mkdir(dirname($path),0600,true);
+			file_exists(dirname($path)) or mkdir(dirname($path),0755,true);
 
 			file_put_contents($path,"<?php\n\n$functionString");
 

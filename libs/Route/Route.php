@@ -4,7 +4,6 @@ namespace Laroute\Route;
 
 use Laroute\Document\Line;
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
-use Laroute\Helper\TGetter;
 use Laroute\Route\Action\NormalAction;
 use Laroute\Route\Action\MultilineClosureAction;
 use Laroute\Route\Action\SimpleClosureAction;
@@ -12,9 +11,8 @@ use Illuminate\Routing\Router;
 
 ////////////////////////////////////////////////////////////////
 
-class Route implements Contracts\IItem, Contracts\IRoute
+class Route extends ARoute
 {
-	use TGetter;
 
 	/**
 	 * Var methods
@@ -26,24 +24,6 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	private $methods;
 
 	/**
-	 * Var path
-	 *
-	 * @access private
-	 *
-	 * @var    string
-	 */
-	private $path;
-
-	/**
-	 * Var params
-	 *
-	 * @access private
-	 *
-	 * @var    array
-	 */
-	private $params= [];
-
-	/**
 	 * Var conditions
 	 *
 	 * @access private
@@ -51,15 +31,6 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	 * @var    array
 	 */
 	private $conditions= [];
-
-	/**
-	 * Var name
-	 *
-	 * @access private
-	 *
-	 * @var    string
-	 */
-	private $name;
 
 	/**
 	 * Var middlewares
@@ -71,15 +42,6 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	private $middlewares= [];
 
 	/**
-	 * Var action
-	 *
-	 * @access private
-	 *
-	 * @var    \Laroute\Route\Action\Contract\IAction
-	 */
-	private $action;
-
-	/**
 	 * Var openedClosure
 	 *
 	 * @access private
@@ -89,13 +51,13 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	private $openedClosure;
 
 	/**
-	 * Method __construct
+	 * Method parseFirstLine
 	 *
-	 * @access public
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 */
-	public function __construct( Line$line )
+	protected function parseFirstLine( Line$line )
 	{
 		$this
 		->parseMethod($line)
@@ -141,24 +103,25 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	/**
 	 * Method parseMethod
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
 	 * @return self
 	 */
-	private function parseMethod( Line$line ):self
+	protected function parseMethod( Line$line ):self
 	{
 		$methodString= $line->pregGet('/^(any|[A-Z ]+)/');
 
 		if( 'any'===$methodString ){
-			$this->methods= array_except(Router::$verbs,'OPTIONS');
+			$this->methods= array_diff(Router::$verbs,[ 'OPTIONS', ]);
 		}else{
-			$this->methods= array_filter(...[
-				explode(' ',trim($methodString)),
-				function( $item ){
-					return in_array($item,Router::$verbs);
-				},
+			$this->methods= array_intersect(...[
+				explode(...[
+					' ',
+					trim($methodString),
+				]),
+				Router::$verbs,
 			]);
 		}
 
@@ -168,77 +131,13 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method parsePath
+	 * Method getFeedingMap
 	 *
-	 * @access private
+	 * @access protected
 	 *
-	 * @param  \Laroute\Document\Line $line
-	 *
-	 * @return self
+	 * @return array
 	 */
-	private function parsePath( Line$line ):self
-	{
-		$this->path= $line->pregGet('/ (\\/([^\\s]*))/',1);
-
-		if( !$this->path ){
-			throw new Exception('Missing path.');
-		}
-
-
-		preg_match_all('/\\{(\\w+)\\??\\}/',$this->path,$matches);
-
-		$params= array_map( function( string...$matches ){
-			if( isset($this->params[$matches[1]]) ){
-				throw new Exception("Param {$matches[1]} cannot defined twice.");
-			}
-			$this->params[$matches[1]]= $matches[1];
-		}, ...$matches );
-
-		return $this;
-	}
-
-	/**
-	 * Method parseName
-	 *
-	 * @access private
-	 *
-	 * @param  \Laroute\Document\Line $line
-	 *
-	 * @return self
-	 */
-	private function parseName( Line$line ):self
-	{
-		$line->pregMap('/ ([^\/\\s]+)$/',function( string...$matches ){
-			$this->name= $matches[1];
-		});
-
-		return $this;
-	}
-
-	/**
-	 * Method feed
-	 *
-	 * @access public
-	 *
-	 * @param  \Laroute\Document\Line $line
-	 *
-	 * @return void
-	 */
-	public function feed( Line$line )
-	{
-		$this->{$this->getFeedMethod($line)}($line);
-	}
-
-	/**
-	 * Method getFeedMethod
-	 *
-	 * @access private
-	 *
-	 * @param  \Laroute\Document\Line $line
-	 *
-	 * @return void
-	 */
-	private function getFeedMethod( Line$line )
+	protected function getFeedingMap():array
 	{
 		static $methodMap= [
 			'?'=> 'Condition',
@@ -249,27 +148,19 @@ class Route implements Contracts\IItem, Contracts\IRoute
 			'('=> 'ClosureAction',
 		];
 
-		for(  $map= $methodMap, $i=0;  is_array($map);  ++$i  ){
-			$map= $map[$line->getChar($i)]??$map['']??null;
-		}
-
-		if( !$map ){
-			throw new Exception('Illegal route modifier');
-		}
-
-		return "feed$map";
+		return $methodMap;
 	}
 
 	/**
-	 * Method feedCondition
+	 * Method feedTheCondition
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
 	 * @return void
 	 */
-	private function feedCondition( Line$line )
+	protected function feedTheCondition( Line$line )
 	{
 		$param= $line->pregGet('/^\?(\w+)/',1);
 
@@ -287,15 +178,15 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method feedMiddleware
+	 * Method feedTheMiddleware
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
 	 * @return void
 	 */
-	private function feedMiddleware( Line$line )
+	protected function feedTheMiddleware( Line$line )
 	{
 		$line->pregMap('/(?:^| )>([^\\s]+)/',function( string...$matches ){
 			$this->middlewares[]= $matches[1];
@@ -303,15 +194,15 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method feedAction
+	 * Method feedTheAction
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
 	 * @return void
 	 */
-	private function feedAction( Line$line )
+	protected function feedTheAction( Line$line )
 	{
 		$this->sureNoAction();
 
@@ -319,15 +210,15 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method feedClosureAction
+	 * Method feedTheClosureAction
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  \Laroute\Document\Line $line
 	 *
 	 * @return void
 	 */
-	private function feedClosureAction( Line$line )
+	protected function feedTheClosureAction( Line$line )
 	{
 		if( $line->pregMatch(MultilineClosureAction::PATTERN) ){
 			$this->startMultilineClosureAction($line);
@@ -371,25 +262,11 @@ class Route implements Contracts\IItem, Contracts\IRoute
 	}
 
 	/**
-	 * Method sureNoAction
-	 *
-	 * @access private
-	 *
-	 * @return void
-	 */
-	private function sureNoAction()
-	{
-		if( isset($this->action) ){
-			throw new Exception('Action already setted.');
-		}
-	}
-
-	/**
 	 * Method getOpenedClosure
 	 *
 	 * @access public
 	 *
-	 * @return \Laroute\Route\Closure
+	 * @return \Laroute\Route\Action\MultilineClosureAction | null
 	 */
 	public function getOpenedClosure()
 	{
