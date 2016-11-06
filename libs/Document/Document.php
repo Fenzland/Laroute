@@ -2,10 +2,13 @@
 
 namespace Laroute\Document;
 
+use Laroute\Helper\TGetter;
+
 ////////////////////////////////////////////////////////////////
 
 class Document
 {
+	use TGetter;
 
 	/**
 	 * File handle.
@@ -35,14 +38,37 @@ class Document
 	private $lineIndex= -1;
 
 	/**
+	 * Var parent
+	 *
+	 * @access private
+	 *
+	 * @var    self
+	 */
+	private $parent;
+
+	/**
+	 * Var indentLevel
+	 *
+	 * @access private
+	 *
+	 * @var    int
+	 */
+	private $indentLevel= 0;
+
+	/**
 	 * Constructing a laroute document from a .laroute file.
 	 *
 	 * @access public
 	 *
-	 * @param  string $filePath
+	 * @param  string       $filePath
+	 * @param  self | null  $parent
+	 * @param  int          $indentLevel
 	 */
-	public function __construct( string$filePath )
+	public function __construct( string$filePath, self$parent=null, int$indentLevel=0 )
 	{
+		$this->parent= $parent;
+		$this->indentLevel= $indentLevel;
+
 		substr($filePath,-8)==='.laroute' or $filePath.= '.laroute';
 
 		if( !file_exists($filePath) || !is_file($filePath) ){
@@ -52,6 +78,30 @@ class Document
 		$this->filePath= $filePath;
 
 		$this->handle= fopen($filePath,'r');
+	}
+
+	/**
+	 * Method getParent
+	 *
+	 * @access public
+	 *
+	 * @return self | null
+	 */
+	public function getParent()
+	{
+		return $this->parent;
+	}
+
+	/**
+	 * Method getIndentLevel
+	 *
+	 * @access public
+	 *
+	 * @return int
+	 */
+	public function getIndentLevel():int
+	{
+		return $this->indentLevel;
 	}
 
 	/**

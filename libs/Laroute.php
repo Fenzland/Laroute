@@ -131,7 +131,9 @@ class Laroute implements IRouteContainer
 	 */
 	public function parse()
 	{
-		while( ($line= $this->document->getLine())->hasMore() ){
+		start:
+
+		while( ($line= $this->document->line)->hasMore() ){
 			if( $this->currentClosure ){
 				$this->closureFeeding($line);
 			}elseif( $this->currentRoute ){
@@ -141,6 +143,11 @@ class Laroute implements IRouteContainer
 			}else{
 				$this->parseLine($line);
 			}
+		}
+
+		if( $this->document->parent ){
+			$this->document= $this->document->parent;
+			goto start;
 		}
 	}
 
@@ -196,7 +203,7 @@ class Laroute implements IRouteContainer
 			function( Line$line ){
 				$this->closeRoute($line);
 
-				$this->setLevel($line->getIndentLevel());
+				$this->setLevel($this->document->indentLevel+$line->indentLevel);
 
 				$this->parseLine($line);
 			},
@@ -218,7 +225,7 @@ class Laroute implements IRouteContainer
 			$line,
 			function( Line$line ){},
 			function( Line$line ){
-				$this->setLevel($line->getIndentLevel());
+				$this->setLevel($this->document->indentLevel+$line->indentLevel);
 
 				$this->parseLine($line);
 			},
@@ -239,7 +246,7 @@ class Laroute implements IRouteContainer
 	 */
 	private function checkIndentAndProcess( Line$line, callable$more, callable$equal, callable$less=null )
 	{
-		$diff= $line->indentLevel - $this->indentLevel;
+		$diff= $this->document->indentLevel+$line->indentLevel - $this->indentLevel;
 
 		if( $diff > 1 ){
 			$this->throw('Indent error');
@@ -278,7 +285,7 @@ class Laroute implements IRouteContainer
 	private function parseLine( Line$line )
 	{
 		$this->currentLine= $line;
-		$this->setLevel($line->getIndentLevel());
+		$this->setLevel($this->document->indentLevel+$line->indentLevel);
 
 		switch( $line->getChar(0) ){
 			default:{
@@ -392,7 +399,11 @@ class Laroute implements IRouteContainer
 	 */
 	private function include( string$fileName )
 	{
-		#
+		$this->document= new Document(...[
+			dirname($this->document->filePath).'/'.$fileName,
+			$this->document,
+			$this->indentLevel,
+		]);
 	}
 
 	/**
@@ -440,7 +451,7 @@ class Laroute implements IRouteContainer
 	 */
 	public function makeException( Exception$e ):Error
 	{
-		return new Error($e,$this->document->getFilePath(),$this->document->getLineNumber());
+		return new Error($e,$this->document->filePath,$this->document->lineNumber);
 	}
 
 }
