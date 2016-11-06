@@ -63,7 +63,14 @@ class ResourceRoute extends ARoute
 	 */
 	public function list():array
 	{
-		return [];
+		$list= [
+			'resource'=> $this->name,
+			'path'=> $this->path,
+		];
+
+		$this->actionsOnlyOrExcept and $list[$this->actionsOnlyOrExcept]= $this->actions;
+
+		return $list;
 	}
 
 	/**
@@ -77,9 +84,7 @@ class ResourceRoute extends ARoute
 	{
 		$options= [ 'names'=>[], ];
 
-		if( $this->actionsOnlyOrExcept ){
-			$options[$this->actionsOnlyOrExcept]= $this->actions;
-		}
+		$this->actionsOnlyOrExcept and $options[$this->actionsOnlyOrExcept]= $this->actions;
 
 		foreach( self::ACTIONS  as $action ){
 			$options['names'][]= "{$this->name}.$action";
