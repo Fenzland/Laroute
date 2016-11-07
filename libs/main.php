@@ -6,7 +6,7 @@ use Laroute\Exceptions\LarouteSyntaxException as Exception;
 
 ////////////////////////////////////////////////////////////////
 
-if( !function_exists('route') ){
+if( !function_exists('\Laroute\route') ){
 	/**
 	 * Creating routes from a laroute file.
 	 *
@@ -28,7 +28,7 @@ if( !function_exists('route') ){
 	}
 }
 
-if( !function_exists('listing') ){
+if( !function_exists('\Laroute\listing') ){
 	/**
 	 * Listing routes from a laroute file.
 	 *
