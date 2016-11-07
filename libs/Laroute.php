@@ -225,7 +225,7 @@ class Laroute implements IRouteContainer
 			$line,
 			function( Line$line ){},
 			function( Line$line ){
-				$this->setLevel($this->document->indentLevel+$line->indentLevel);
+				$this->currentComment= null;
 
 				$this->parseLine($line);
 			},
