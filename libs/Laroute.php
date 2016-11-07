@@ -171,11 +171,11 @@ class Laroute implements IRouteContainer
 				if( $line->content==='}' ){
 					$this->closeClosure();
 				}else{
-					$this->throw('Indent error');
+					throw new Exception('Indent error');
 				}
 			},
 			function( Line$line ){
-				$this->throw('Indent error');
+				throw new Exception('Indent error');
 			},
 		]);
 	}
@@ -249,7 +249,7 @@ class Laroute implements IRouteContainer
 		$diff= $this->document->indentLevel+$line->indentLevel - $this->indentLevel;
 
 		if( $diff > 1 ){
-			$this->throw('Indent error');
+			throw new Exception('Indent error');
 		}elseif( $diff == 1 ){
 			$more($line);
 		}elseif( $diff == 0 ){
@@ -324,7 +324,7 @@ class Laroute implements IRouteContainer
 		}elseif( $level==1 ){
 			$this->indentLevel+= 1;
 		}else{
-			$this->throw('Indent error.');
+			throw new Exception('Indent error.');
 		}
 	}
 
