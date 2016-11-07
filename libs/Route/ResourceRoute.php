@@ -55,13 +55,13 @@ class ResourceRoute extends ARoute
 	}
 
 	/**
-	 * Method list
+	 * Method listing
 	 *
 	 * @access public
 	 *
 	 * @return array
 	 */
-	public function list():array
+	public function listing():array
 	{
 		$list= [
 			'resource'=> $this->name,

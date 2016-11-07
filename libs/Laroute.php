@@ -109,16 +109,16 @@ class Laroute implements IRouteContainer
 	}
 
 	/**
-	 * Method list
+	 * Method listing
 	 *
 	 * @access public
 	 *
 	 * @return array
 	 */
-	public function list():array
+	public function listing():array
 	{
 		return $this->mapItems( function( $item ){
-			return $item->list();
+			return $item->listing();
 		} );
 	}
 

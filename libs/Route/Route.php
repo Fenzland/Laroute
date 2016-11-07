@@ -67,13 +67,13 @@ class Route extends ARoute
 	}
 
 	/**
-	 * Method list
+	 * Method listing
 	 *
 	 * @access public
 	 *
 	 * @return array
 	 */
-	public function list():array
+	public function listing():array
 	{
 		return [
 			'name'=>    $this->name,

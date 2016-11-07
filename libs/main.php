@@ -46,6 +46,6 @@ if( !function_exists('listing') ){
 			throw $routes->makeException($e);
 		}
 
-		return $routes->list();
+		return $routes->listing();
 	}
 }

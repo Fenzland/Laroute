@@ -76,13 +76,13 @@ abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 	abstract protected function parseFirstLine( Line$line );
 
 	/**
-	 * Method list
+	 * Method listing
 	 *
 	 * @access public
 	 *
 	 * @return array
 	 */
-	abstract public function list():array;
+	abstract public function listing():array;
 
 	/**
 	 * Method makeCallback

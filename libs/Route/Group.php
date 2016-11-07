@@ -91,13 +91,13 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	}
 
 	/**
-	 * Method list
+	 * Method listing
 	 *
 	 * @access public
 	 *
 	 * @return array
 	 */
-	public function list():array
+	public function listing():array
 	{
 		return [
 			'middlewares'=> $this->middlewares,
@@ -105,7 +105,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 			'domain'=>      $this->domain,
 			'namespace'=>   $this->namespace,
 			'name_prefix'=> $this->namePrefix,
-			'children'=>    $this->mapItems( function( $item ){ return $item->list(); } ),
+			'children'=>    $this->mapItems( function( $item ){ return $item->listing(); } ),
 		];
 	}
 
