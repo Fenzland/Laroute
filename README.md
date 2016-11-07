@@ -24,7 +24,7 @@ Step 3. Write routes with Laroute, and save file named with extension '.laroute'
 
 # Editor support
 
-[Sublime Text](https://github.com/Fenzland/Laroute-sublime)
+[Sublime Text](https://github.com/Fenzland/Laroute.sublime)
 
 # License
 
