@@ -42,13 +42,13 @@ class Group implements Contracts\IItem, Contracts\IContainer
 
 
 	/**
-	 * Var prefix
+	 * Var pathPrefix
 	 *
 	 * @access private
 	 *
 	 * @var    string
 	 */
-	private $prefix;
+	private $pathPrefix;
 
 
 	/**
@@ -84,7 +84,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 		$this
 		->parseMiddleware()
 		->parseDomain()
-		->parsePrefix()
+		->parsePathPrefix()
 		->parseNamespace()
 		->parseNamePrefix()
 		;
@@ -101,7 +101,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	{
 		return [
 			'middlewares'=> $this->middlewares,
-			'prefix'=>      $this->prefix,
+			'path_prefix'=> $this->pathPrefix,
 			'domain'=>      $this->domain,
 			'namespace'=>   $this->namespace,
 			'name_prefix'=> $this->namePrefix,
@@ -149,7 +149,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 		$options= [];
 
 		$this->middlewares and $options['middleware']= $this->middlewares ;
-		$this->prefix      and $options['prefix']=     $this->prefix      ;
+		$this->pathPrefix  and $options['prefix']=     $this->pathPrefix  ;
 		$this->domain      and $options['domain']=     $this->domain      ;
 		$this->namespace   and $options['namespace']=  $this->namespace   ;
 		$this->namePrefix  and $options['as']=         $this->namePrefix  ;
@@ -190,16 +190,16 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	}
 
 	/**
-	 * Method parsePrefix
+	 * Method parsePathPrefix
 	 *
 	 * @access public
 	 *
 	 * @return self
 	 */
-	public function parsePrefix():self
+	public function parsePathPrefix():self
 	{
 		$this->line->pregMap('/ \\/([^\\s]+)/',function( string...$matches ){
-			$this->prefix= $matches[1];
+			$this->pathPrefix= $matches[1];
 		});
 
 		return $this;
