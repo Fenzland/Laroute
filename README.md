@@ -1,4 +1,4 @@
-Laroute (developing)
+Laroute
 ================================
 
 A high readablility route syntax for Laravel.
