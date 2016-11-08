@@ -131,6 +131,18 @@ class Route extends ARoute
 	}
 
 	/**
+	 * Method isNameRequired
+	 *
+	 * @access protected
+	 *
+	 * @return bool
+	 */
+	protected function isNameRequired():bool
+	{
+		return false;
+	}
+
+	/**
 	 * Method getFeedingMap
 	 *
 	 * @access protected

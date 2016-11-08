@@ -147,8 +147,21 @@ abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 			$this->name= $matches[1];
 		});
 
+		if( $this->isNameRequired() && !$this->name ){
+			throw new Exception('Name of '.class_basename(get_class($this)).' is required.');
+		}
+
 		return $this;
 	}
+
+	/**
+	 * Method isNameRequired
+	 *
+	 * @access protected
+	 *
+	 * @return bool;
+	 */
+	abstract protected function isNameRequired():bool;
 
 	/**
 	 * Method getFeedingMap

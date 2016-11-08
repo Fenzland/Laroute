@@ -108,6 +108,18 @@ class ResourceRoute extends ARoute
 	}
 
 	/**
+	 * Method isNameRequired
+	 *
+	 * @access protected
+	 *
+	 * @return bool
+	 */
+	protected function isNameRequired():bool
+	{
+		return true;
+	}
+
+	/**
 	 * Method getFeedingMap
 	 *
 	 * @access protected
