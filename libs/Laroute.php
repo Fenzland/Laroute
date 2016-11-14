@@ -244,18 +244,22 @@ class Laroute implements IRouteContainer
 	 *
 	 * @return void
 	 */
-	private function checkIndentAndProcess( Line$line, callable$more, callable$equal, callable$less=null )
+	private function checkIndentAndProcess( Line$line, callable$more, callable$equal, callable$less=null, callable$muchMore=null )
 	{
 		$diff= $this->document->indentLevel+$line->indentLevel - $this->indentLevel;
 
 		if( $diff > 1 ){
-			throw new Exception('Indent error');
+			if( $muchMore ){
+				return $muchMore;
+			}else{
+				throw new Exception('Indent error');
+			}
 		}elseif( $diff == 1 ){
-			$more($line);
+			return $more($line);
 		}elseif( $diff == 0 ){
-			$equal($line);
+			return $equal($line);
 		}else{
-			($less??$equal)($line);
+			return ($less??$equal)($line);
 		}
 	}
 
