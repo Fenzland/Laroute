@@ -229,6 +229,8 @@ class Laroute implements IRouteContainer
 
 				$this->parseLine($line);
 			},
+			null,
+			function( Line$line ){},
 		]);
 	}
 
