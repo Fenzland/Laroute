@@ -19,7 +19,7 @@ class LarouteSyntaxError extends \Exception implements \Throwable
 	 */
 	public function __construct( LarouteSyntaxException$e, string$file, int$line )
 	{
-		parent::__construct($e->getMessage(),$e->getCode(),$e);
+		parent::__construct($e->getMessage(),$e->getCode());
 
 		$this->file= $file;
 		$this->line= $line;
