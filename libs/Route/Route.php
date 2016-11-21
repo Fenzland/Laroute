@@ -232,6 +232,8 @@ class Route extends ARoute
 	 */
 	protected function feedTheClosureAction( Line$line )
 	{
+		$this->checkClosureParameters($line);
+
 		if( $line->pregMatch(MultilineClosureAction::PATTERN) ){
 			$this->startMultilineClosureAction($line);
 		}elseif( $line->pregMatch(SimpleClosureAction::PATTERN) ){
@@ -239,6 +241,24 @@ class Route extends ARoute
 		}else{
 			throw new Exception('Closure syntax error.');
 		}
+	}
+
+	/**
+	 * Method checkClosureParameters
+	 *
+	 * @access private
+	 *
+	 * @param  Line $line
+	 *
+	 * @return void
+	 */
+	private function checkClosureParameters( Line$line )
+	{
+		preg_replace_callback('/\\$(\\w+)/',function( $matches ){
+			if( !in_array($matches[1],$this->params) ){
+				throw new Exception("Param \${$matches[1]} not exists.");
+			}
+		},$line->pregGet('/^\\((.*)\\)=>/',1));
 	}
 
 	/**
