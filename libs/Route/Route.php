@@ -174,13 +174,13 @@ class Route extends ARoute
 	 */
 	protected function feedTheCondition( Line$line )
 	{
-		$param= $line->pregGet('/^\?(\w+)/',1);
+		$param= $line->pregGet('/^\\?(\\w+)/',1);
 
 		if( !in_array($param,$this->params) ){
 			throw new Exception("Param \${$param} not exists.");
 		}
 
-		$condition= $line->pregGet('/^\?\w+ (.*)$/',1);
+		$condition= $line->pregGet('/^\\?\\w+ (.*)$/',1);
 
 		if( !$condition ){
 			throw new Exception('Missing condition.');

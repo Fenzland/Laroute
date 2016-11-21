@@ -307,7 +307,7 @@ class Laroute implements IRouteContainer
 			}break;
 
 			case '@':{
-				$this->include($line->pregGet('/^@\s?(.+)/',1));
+				$this->include($line->pregGet('/^@\\s?(.+)/',1));
 			}break;
 		}
 	}
