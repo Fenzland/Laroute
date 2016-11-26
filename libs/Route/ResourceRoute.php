@@ -4,6 +4,7 @@ namespace Laroute\Route;
 
 use Laroute\Document\Line;
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
+use Illuminate\Routing\Router;
 
 ////////////////////////////////////////////////////////////////
 
@@ -90,8 +91,8 @@ class ResourceRoute extends ARoute
 			$options['names'][]= "{$this->name}.$action";
 		}
 
-		return function()use( $options ){
-			$route= app('router')->resource($this->path,$this->action->output(),$options);
+		return function( Router$router )use( $options ){
+			$route= $router->resource($this->path,$this->action->output(),$options);
 		};
 	}
 

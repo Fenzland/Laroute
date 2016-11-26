@@ -5,6 +5,7 @@ namespace Laroute\Route;
 use Laroute\RouteContainer;
 use Laroute\Document\Line;
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
+use Illuminate\Routing\Router;
 
 ////////////////////////////////////////////////////////////////
 
@@ -118,13 +119,13 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	public function makeCallback():callable
 	{
-		return function(){
-			app('router')->group(...[
+		return function( Router$router ){
+			$router->group(...[
 				$this->getOptions(),
-				function(){
+				function()use( $router ){
 					array_map(...[
-						function( $coallback ){
-							$coallback();
+						function( $coallback )use( $router ){
+							$coallback($router);
 						},
 						$this->mapItems(
 							function( $item ){

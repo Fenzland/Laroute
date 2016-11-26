@@ -91,8 +91,8 @@ class Route extends ARoute
 	 */
 	public function makeCallback():callable
 	{
-		return function(){
-			$route= app('router')->match($this->methods,$this->path,$this->action->output());
+		return function( Router$router ){
+			$route= $router->match($this->methods,$this->path,$this->action->output());
 
 			$this->name        and $route->name($this->name);
 			$this->middlewares and $route->middleware($this->middlewares);

@@ -12,6 +12,7 @@ use Laroute\Route\Contracts\IContainer as IRouteContainer;
 use Laroute\Route\TContainer as TRouteContainer;
 use Laroute\Exceptions\LarouteSyntaxError as Error;
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
+use Illuminate\Routing\Router;
 
 ////////////////////////////////////////////////////////////////
 
@@ -92,13 +93,15 @@ class Laroute implements IRouteContainer
 	 *
 	 * @access public
 	 *
+	 * @param Illuminate\Routing\Router $router
+	 *
 	 * @return void
 	 */
-	public function execute()
+	public function execute( Router$router )
 	{
 		array_map(...[
-			function( callable$callback ){
-				$callback();
+			function( callable$callback )use( $router ){
+				$callback($router);
 			},
 			$this->mapItems(
 				function( $item ){

@@ -3,6 +3,7 @@
 namespace Laroute;
 
 use Laroute\Exceptions\LarouteSyntaxException as Exception;
+use Illuminate\Container\Container;
 
 ////////////////////////////////////////////////////////////////
 
@@ -24,7 +25,7 @@ if( !function_exists('\Laroute\route') ){
 			throw $routes->makeException($e);
 		}
 
-		$routes->execute();
+		$routes->execute(Container::getInstance()->make('router'));
 	}
 }
 
