@@ -1,6 +1,9 @@
 CHANGELOG
 ================================
 
+## 1.0.5
+* Update dependence, require illuminate/routing and illuminate/container instead of laravel/framework
+
 ## 1.0.4
 * Fix issue #2 checks closure parameter and throws exceptions.
 * Hide the exception for library developing debug.
