@@ -1,6 +1,9 @@
 CHANGELOG
 ================================
 
+## 1.0.6
+* Fix BUG with issue #5 . Parameters defined in groups now parss to there children groups and routes.
+
 ## 1.0.5
 * Update dependence, require illuminate/routing and illuminate/container instead of laravel/framework
 
