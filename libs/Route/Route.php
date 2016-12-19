@@ -24,15 +24,6 @@ class Route extends ARoute
 	private $methods;
 
 	/**
-	 * Var conditions
-	 *
-	 * @access private
-	 *
-	 * @var    array
-	 */
-	private $conditions= [];
-
-	/**
 	 * Var middlewares
 	 *
 	 * @access private
@@ -176,17 +167,13 @@ class Route extends ARoute
 	{
 		$param= $line->pregGet('/^\\?(\\w+)/',1);
 
-		if( !in_array($param,$this->params) ){
-			throw new Exception("Param \${$param} not exists.");
-		}
-
 		$condition= $line->pregGet('/^\\?\\w+ (.*)$/',1);
 
 		if( !$condition ){
 			throw new Exception('Missing condition.');
 		}
 
-		$this->conditions[$param]= $condition;
+		$this->setCondition( $param, $condition );
 	}
 
 	/**

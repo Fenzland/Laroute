@@ -203,6 +203,8 @@ class Group implements Contracts\IItem, Contracts\IContainer
 			$this->pathPrefix= $matches[1];
 		});
 
+		$this->pathPrefix and $this->parseParameters( $this->pathPrefix );
+
 		return $this;
 	}
 

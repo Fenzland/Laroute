@@ -15,6 +15,7 @@ use Illuminate\Routing\Router;
 abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 {
 	use TGetter;
+	use TCarriesParameters;
 
 	/**
 	 * Var path
@@ -42,15 +43,6 @@ abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 	 * @var    \Laroute\Route\Action\Contract\IAction
 	 */
 	protected $action;
-
-	/**
-	 * Var params
-	 *
-	 * @access protected
-	 *
-	 * @var    array
-	 */
-	protected $params= [];
 
 	/**
 	 * Method __construct
@@ -120,14 +112,7 @@ abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 		}
 
 
-		preg_match_all('/\\{(\\w+)\\??\\}/',$this->path,$matches);
-
-		$params= array_map( function( string...$matches ){
-			if( isset($this->params[$matches[1]]) ){
-				throw new Exception("Param {$matches[1]} cannot defined twice.");
-			}
-			$this->params[$matches[1]]= $matches[1];
-		}, ...$matches );
+		$this->parseParameters($this->path);
 
 		return $this;
 	}

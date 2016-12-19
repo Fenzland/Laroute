@@ -6,6 +6,7 @@ namespace Laroute\Route;
 
 trait TContainer
 {
+	use TCarriesParameters;
 
 	/**
 	 * Var items
@@ -28,6 +29,9 @@ trait TContainer
 	public function addItem( Contracts\IItem$item )
 	{
 		$this->items[]= $item;
+
+		$item->setParameters( $this->params );
+		$item->setConditions( $this->conditions );
 	}
 
 	/**
