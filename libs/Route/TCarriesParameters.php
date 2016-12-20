@@ -101,21 +101,32 @@ trait TCarriesParameters
 	}
 
 	/**
-	 * Method parseParameters
+	 * Method takeParametersFromPath
 	 *
 	 * @access public
 	 *
 	 * @param string $path
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function parseParameters( string$path )
+	public function takeParametersFromPath( string$path ):string
 	{
+		return preg_replace_callback( '/\\{(?P<parameter>\\w+)(?:\\/(?P<condition>(?:(?>\\\\)\\/|[^\\/])+)\\/)?(?P<optional_sign>\\??)\\}/', function( array$matches ){
+			$this->setParameter( $matches['parameter'] );
+
+			if( $matches['condition'] ){
+				$this->setCondition( $matches['parameter'], $matches['condition'] );
+			}
+
+			return "{{$matches['parameter']}{$matches['optional_sign']}}";
+		}, $path );
+
 		preg_match_all('/\\{(\\w+)\\??\\}/',$path,$matches);
 
 		$params= array_map( function( string...$matches ){
 			$this->setParameter( $matches[1] );
 		}, ...$matches );
+
 	}
 
 }

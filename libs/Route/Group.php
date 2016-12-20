@@ -199,11 +199,13 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	public function parsePathPrefix():self
 	{
-		$this->line->pregMap('/ \\/([^\\s]+)/',function( string...$matches ){
-			$this->pathPrefix= $matches[1];
+		$path= '';
+
+		$this->line->pregMap('/ \\/([^\\s]+)/',function( string...$matches )use( &$path ){
+			$path= $matches[1];
 		});
 
-		$this->pathPrefix and $this->parseParameters( $this->pathPrefix );
+		$this->pathPrefix= $this->takeParametersFromPath( $path );
 
 		return $this;
 	}

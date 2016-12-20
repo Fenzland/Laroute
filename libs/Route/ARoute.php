@@ -105,14 +105,13 @@ abstract class ARoute implements Contracts\IItem, Contracts\IRoute
 	 */
 	protected function parsePath( Line$line ):self
 	{
-		$this->path= $line->pregGet('/ (\\/([^\\s]*))/',1);
+		$path= $line->pregGet('/ (\\/([^\\s]*))/',1);
 
-		if( !$this->path ){
+		if( !$path ){
 			throw new Exception('Missing path.');
 		}
 
-
-		$this->parseParameters($this->path);
+		$this->path= $this->takeParametersFromPath($path);
 
 		return $this;
 	}
