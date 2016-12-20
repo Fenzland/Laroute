@@ -1,6 +1,9 @@
 CHANGELOG
 ================================
 
+## 1.0.7
+* Allow new snytax to define parameter condition like {parameter/condition/} or {parameter/condition/?}.
+
 ## 1.0.6
 * Fix BUG with issue #5 . Parameters defined in groups now parss to there children groups and routes.
 
