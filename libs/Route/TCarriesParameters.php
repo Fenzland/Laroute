@@ -97,6 +97,11 @@ trait TCarriesParameters
 			throw new Exception("Param \${$parameter} not exists.");
 		}
 
+		if( isset($this->conditions[$parameter]) )
+		{
+			throw new Exception("Condition of \${$parameter} cannot defined twice.");
+		}
+
 		$this->conditions[$parameter]= $condition;
 	}
 
