@@ -1,3 +1,5 @@
+<img src="http://laroute.fenzland.com/logos/big.svg" width="100" />
+
 Laroute
 ================================
 
