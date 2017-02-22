@@ -183,9 +183,13 @@ class Group implements Contracts\IItem, Contracts\IContainer
 	 */
 	private function parseDomain():self
 	{
-		$this->line->pregMap('/ @([^\\s]+)/',function( string...$matches ){
-			$this->domain= $matches[1];
+		$domain= '';
+
+		$this->line->pregMap('/ @([^\\s]+)/',function( string...$matches )use( &$domain ){
+			$domain= $matches[1];
 		});
+
+		$this->domain= $this->takeParametersFromPath( $domain );
 
 		return $this;
 	}
