@@ -88,7 +88,7 @@ class ResourceRoute extends ARoute
 		$this->actionsOnlyOrExcept and $options[$this->actionsOnlyOrExcept]= $this->actions;
 
 		foreach( self::ACTIONS  as $action ){
-			$options['names'][]= "{$this->name}.$action";
+			$options['names'][$action]= "{$this->name}.$action";
 		}
 
 		return function( Router$router )use( $options ){
