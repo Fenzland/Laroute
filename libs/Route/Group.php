@@ -154,6 +154,7 @@ class Group implements Contracts\IItem, Contracts\IContainer
 		$this->domain      and $options['domain']=     $this->domain      ;
 		$this->namespace   and $options['namespace']=  $this->namespace   ;
 		$this->namePrefix  and $options['as']=         $this->namePrefix  ;
+		$this->conditions  and $options['where']=      $this->conditions  ;
 
 		return $options;
 	}
