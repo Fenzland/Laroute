@@ -277,6 +277,7 @@ class Route extends ARoute
 	{
 		$this->sureNoAction();
 
+		$this->action=
 		$this->openedClosure= new MultilineClosureAction($line);
 	}
 
@@ -290,6 +291,18 @@ class Route extends ARoute
 	public function getOpenedClosure()
 	{
 		return $this->openedClosure;
+	}
+
+	/**
+	 * Method closeClosure
+	 *
+	 * @access public
+	 *
+	 * @return viod
+	 */
+	public function closeClosure()
+	{
+		$this->openedClosure= null;
 	}
 
 }

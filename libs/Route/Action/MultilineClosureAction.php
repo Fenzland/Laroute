@@ -30,4 +30,18 @@ class MultilineClosureAction extends AClosureAction
 		$this->setParamString($line->pregGet(self::PATTERN,1));
 	}
 
+	/**
+	 * Method feed
+	 *
+	 * @access public
+	 *
+	 * @param  Line $line
+	 *
+	 * @return viod
+	 */
+	public function feed( Line$line )
+	{
+		$this->appendBody( $line->fullContent );
+	}
+
 }

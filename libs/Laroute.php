@@ -168,14 +168,26 @@ class Laroute implements IRouteContainer
 		$this->checkIndentAndProcess(...[
 			$line,
 			function( Line$line ){
-				$this->currentClosure->feed($line);
+				switch( $line->getChar(0) )
+				{
+					case ' ':{
+						$this->currentClosure->feed($line->subIndentLine);
+					}break;
+					case '}':{
+						if( $line->content==='}' ){
+							$this->closeClosure();
+						}else{
+							throw new Exception('Syntax error');
+						}
+					}break;
+					default:{
+						dd($line->content);
+						throw new Exception('Syntax error');
+					}break;
+				}
 			},
 			function( Line$line ){
-				if( $line->content==='}' ){
-					$this->closeClosure();
-				}else{
-					throw new Exception('Indent error');
-				}
+				$this->parseLine($line);
 			},
 			function( Line$line ){
 				throw new Exception('Indent error');
@@ -279,7 +291,7 @@ class Laroute implements IRouteContainer
 	{
 		$this->currentRoute->closeClosure();
 
-		$this->closure= null;
+		$this->currentClosure= null;
 	}
 
 	/**
